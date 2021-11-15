@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 
 const studentsRoutes = require("./routes/students-routes");
 const teachersRoutes = require("./routes/teachers-routes");
@@ -28,4 +29,9 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || "An unknown error occurred!" });
 });
 
-app.listen(5000);
+mongoose
+  .connect(
+    "mongodb+srv://dhairay:LAnej5doJIMuoWpH@cluster0.minpp.mongodb.net/subjects?retryWrites=true&w=majority"
+  )
+  .then(() => app.listen(5000))
+  .catch((error) => console.log(error));
