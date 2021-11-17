@@ -19,7 +19,7 @@ const validationSchema = Yup.object().shape({
   password: Yup.string().required().min(4).label("Password"),
 });
 
-const LoginScreen = (props) => {
+const LoginScreen = ({ isStudent }) => {
   // const authContext = useContext(AuthContext);
 
   const [error, setError] = useState(false);
@@ -36,7 +36,6 @@ const LoginScreen = (props) => {
   };
   return (
     <Screen style={styles.container}>
-
       <Form
         initialValues={{ email: "", password: "" }}
         onSubmit={handleSubmit}

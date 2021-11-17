@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   description: { marginBottom: 10 },
+  schedule: { marginTop: 20 },
   divider: {
     left: "2%",
     width: "96%",
@@ -35,7 +36,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 300,
   },
-  price: {
+  link: {
+    textAlign: "center",
     color: colors.secondary,
     fontWeight: "bold",
     fontSize: 20,

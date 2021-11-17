@@ -19,14 +19,13 @@ import { ScrollView } from "react-native-gesture-handler";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required().label("Name"),
-  hostel: Yup.string().required().label("Hostel"),
-  room: Yup.string().required().label("Room No."),
+  roll: Yup.string().required().label("Roll Number"),
   email: Yup.string().required().email().label("Email"),
   mobileNumber: Yup.string().required().label("Mobile Number").length(10),
   password: Yup.string().required().min(4).label("Password"),
 });
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ isStudent }) => {
   // const authContext = useContext(AuthContext);
   const [error, setError] = useState(false);
   const handleSubmit = async (userInfo) => {
@@ -85,19 +84,14 @@ const RegisterScreen = () => {
             name="mobileNumber"
             placeholder="Mobile Number"
           />
-          <FormField
-            autoCorrect={false}
-            autoCapitalize="sentences"
-            icon="school"
-            name="hostel"
-            placeholder="Hostel"
-          />
-          <FormField
-            autoCorrect={false}
-            icon="home"
-            name="room"
-            placeholder="Room Number"
-          />
+          {isStudent && (
+            <FormField
+              autoCorrect={false}
+              icon="school"
+              name="roll"
+              placeholder="Roll Number"
+            />
+          )}
           <SubmitButton title="Register" />
         </ScrollView>
       </Form>

@@ -1,19 +1,13 @@
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  Image,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
 
 import Text from "./Text";
 import colors from "../config/colors";
 
-function Card({ title, subTitle, image, onPress }) {
+function Card({ title, subTitle, onPress }) {
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View style={styles.card}>
-        <Image style={styles.image} source={{ uri: image }} />
         <View style={styles.detailsContainer}>
           <Text style={styles.title} numberOfLines={1}>
             {title}
@@ -38,11 +32,6 @@ const styles = StyleSheet.create({
   detailsContainer: {
     paddingVertical: 10,
     paddingHorizontal: 10,
-  },
-  image: {
-    borderRadius: 15,
-    width: "100%",
-    height: 200,
   },
   subTitle: {
     color: colors.secondary,
