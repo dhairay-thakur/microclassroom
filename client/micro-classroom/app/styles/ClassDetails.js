@@ -24,13 +24,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     alignItems: "center",
   },
-  description: { marginBottom: 10 },
-  schedule: { marginTop: 20 },
   divider: {
     left: "2%",
     width: "96%",
-    borderColor: colors.secondary,
+    borderColor: colors.primary,
     borderWidth: 1,
+  },
+  weekday: {
+    color: colors.primary,
+    fontSize: 18,
+    fontWeight: "bold",
+    paddingHorizontal: 10,
+    paddingBottom: 10,
   },
   image: {
     width: "100%",
@@ -50,6 +55,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    paddingHorizontal: 10,
+  },
+  description: {
+    paddingHorizontal: 10,
   },
   itemContainer: {
     marginVertical: 5,

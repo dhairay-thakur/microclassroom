@@ -1,50 +1,25 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Linking,
-} from "react-native";
-
-import ListItem from "../components/ListItem";
-import Text from "../components/Text";
-import Button from "../components/Button";
+import React, { useState } from "react";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import Screen from "../components/Screen";
-import Modal from "react-native-modal";
-import Icon from "../components/Icon";
-
+import Text from "../components/Text";
+import routes from "../navigation/routes";
 // import routes from "../navigation/routes";
-
 // import useApi from "../hooks/useApi";
 // import usersApi from "../api/users";
-
 import styles from "../styles/ClassDetails";
-import colors from "../config/colors";
-import ActivityIndicator from "../components/ActivityIndicator";
-import Schedule from "../components/Schedule";
 
-const subject = {
-  id: 0,
-  teacher: "6192c1e9032a756e2ab71bd4",
-  name: "CS101",
-  description: "this is a test class",
-  schedule: {
-    mon: [1730, 1830, 0],
-    tue: [],
-    wed: [1300, 1400, 10],
-    thu: [],
-    fri: [1800, 1900, 20],
-    sat: [],
-    sun: [],
-  },
-  meetLink: "test_link",
-  maxCapacity: 10,
-  attendees: [],
-};
+const DayNames = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
 const ClassDetailsScreen = ({ navigation, route }) => {
-  // const subject = route.params;
+  const subject = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   // const { data, error, loading, request: loadUserDetails } = useApi(
   //   usersApi.getUserDetails
@@ -59,11 +34,35 @@ const ClassDetailsScreen = ({ navigation, route }) => {
         <View style={styles.detailsContainer}>
           <Text style={styles.title}>{subject.name}</Text>
           <Text style={styles.description}>{subject.description}</Text>
+          <TouchableOpacity>
+            <Text style={styles.link}>Join Class {subject.meetLink}</Text>
+          </TouchableOpacity>
+          {subject.schedule.map(
+            (item, key) =>
+              item.length !== 0 && (
+                <Text key={key} style={styles.weekday}>
+                  {DayNames[key]} :{" "}
+                  {
+                    <Text>
+                      {item[0]} - {item[1]}
+                    </Text>
+                  }
+                </Text>
+              )
+          )}
           <View style={styles.divider} />
-          <Text style={styles.link}>Join Class {subject.meetLink}</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(routes.CLASS_EDIT, subject)}
+          >
+            <Text style={styles.link}>Edit Class Details</Text>
+          </TouchableOpacity>
           <View style={styles.divider} />
-          <Text style={styles.schedule}>Roster</Text>
-          <Schedule schedule={subject.schedule} />
+          <TouchableOpacity
+            onPress={() => navigation.navigate(routes.SCHEDULE_EDIT, subject)}
+          >
+            <Text style={styles.link}>Edit Class Schedule</Text>
+          </TouchableOpacity>
+          <View style={styles.divider} />
         </View>
       </ScrollView>
     </Screen>

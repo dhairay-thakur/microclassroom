@@ -12,11 +12,14 @@ import RegisterScreen from "./app/screens/RegisterScreen";
 import ClassDetailsScreen from "./app/screens/ClassDetailsScreen";
 import ClassEditScreen from "./app/screens/ClassEditScreen";
 import AccountScreen from "./app/screens/AccountScreen";
+import ClassScheduleEdit from "./app/screens/ClassScheduleEdit";
+import ClassesScreen from "./app/screens/ClassesScreen";
+import JoinClassScreen from "./app/screens/JoinClassScreen";
 
 export default function App() {
   return (
     // <View style={styles.container}>
-    //   <AccountScreen />
+    //   <JoinClassScreen />
     //   <StatusBar style="auto" />
     // </View>
     <NavigationContainer theme={navigationTheme}>

@@ -2,6 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ClassEditScreen from "../screens/ClassEditScreen";
+import JoinClassScreen from "../screens/JoinClassScreen";
 import AccountNavigator from "./AccountNavigator";
 import NewClassButton from "./NewClassButton";
 import FeedNavigator from "./FeedNavigator";
@@ -21,12 +22,12 @@ const AppNavigator = () => (
       }}
     />
     <Tab.Screen
-      name={routes.CLASS_EDIT}
-      component={ClassEditScreen}
+      name={routes.JOIN_CLASS}
+      component={JoinClassScreen}
       options={({ navigation }) => ({
         tabBarButton: () => (
           <NewClassButton
-            onPress={() => navigation.navigate(routes.CLASS_EDIT)}
+            onPress={() => navigation.navigate(routes.JOIN_CLASS)}
           />
         ),
         tabBarIcon: ({ color, size }) => (

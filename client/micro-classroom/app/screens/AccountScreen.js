@@ -37,7 +37,7 @@ function AccountScreen({ navigation }) {
       <View style={styles.container}>
         <ListItem
           // onPress={() => {}}
-          title="My Listings"
+          title="My Schedule"
           IconComponent={
             <Icon
               name="format-list-bulleted"
