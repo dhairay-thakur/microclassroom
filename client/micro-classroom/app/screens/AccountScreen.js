@@ -11,6 +11,7 @@ import Screen from "../components/Screen";
 // import authStorage from "../auth/storage";
 
 import styles from "../styles/Account";
+import routes from "../navigation/routes";
 
 const user = {
   name: "DhairayTeacher",
@@ -36,7 +37,9 @@ function AccountScreen({ navigation }) {
       </View>
       <View style={styles.container}>
         <ListItem
-          // onPress={() => {}}
+          onPress={() => {
+            navigation.navigate(routes.MY_SCHEDULE);
+          }}
           title="My Schedule"
           IconComponent={
             <Icon
