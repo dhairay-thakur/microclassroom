@@ -10,6 +10,8 @@ router.get("/:id", subjectController.getSubjectById);
 
 router.post("/", subjectController.createSubject);
 
+router.patch("/join/:id", subjectController.joinSubject);
+
 router.patch("/:id", subjectController.updateSubject);
 
 router.delete("/:id", subjectController.deleteSubject);

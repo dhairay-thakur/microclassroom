@@ -91,8 +91,7 @@ const createSubject = async (req, res, next) => {
 };
 
 const updateSubject = async (req, res, next) => {
-  const { name, schedule, meetLink, maxCapacity, attendees, description } =
-    req.body;
+  const { name, schedule, meetLink, maxCapacity, description } = req.body;
   const subjectId = req.params.id;
   let subject;
   try {
@@ -110,7 +109,6 @@ const updateSubject = async (req, res, next) => {
   if (schedule) subject.schedule = schedule;
   if (meetLink) subject.meetLink = meetLink;
   if (maxCapacity) subject.maxCapacity = maxCapacity;
-  if (attendees) subject.attendees = attendees;
   if (description) subject.description = description;
 
   try {
@@ -131,9 +129,11 @@ const deleteSubject = async (req, res, next) => {
 
   let subject;
   try {
-    subject = await Subject.findById(subjectId).populate("teacher");
+    subject = await Subject.findById(subjectId)
+      .populate("teacher")
+      .populate("attendees");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return next(
       new HttpError("Could not Delete Subject. Please try later", 500)
     );
@@ -151,15 +151,71 @@ const deleteSubject = async (req, res, next) => {
     await subject.remove();
     subject.teacher.subjects.pull(subject);
     await subject.teacher.save({ session: sess });
+    console.log(subject.attendees);
+    for (const student of subject.attendees) {
+      student.subjects.pull(subject);
+      await student.save({ session: sess });
+    }
     await sess.commitTransaction();
   } catch (error) {
+    await sess.abortTransaction();
     console.log(error);
     return next(new HttpError("Could not Delete Subject", 500));
   }
   res.status(200).json({ message: "Deleted Subject Successfully" });
 };
 
+const joinSubject = async (req, res, next) => {
+  const { studentId } = req.body;
+  const subjectId = req.params.id;
+  let subject, student;
+  try {
+    subject = await Subject.findById(subjectId);
+  } catch (error) {
+    return next(new HttpError("Could not add attendee", 500));
+  }
+
+  if (!subject) {
+    return next(
+      new HttpError("Could not find a subject for the provided id", 404)
+    );
+  }
+
+  try {
+    student = await Student.findById(studentId);
+  } catch (error) {
+    return next(new HttpError("Could not add attendee", 500));
+  }
+
+  if (!student) {
+    return next(
+      new HttpError("Could not find a subject for the provided id", 404)
+    );
+  }
+  if (student.subjects.includes(subjectId)) {
+    return next(new HttpError("Student already enrolled", 400));
+  }
+  subject.attendees.push(studentId);
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await subject.save({ session: sess });
+    student.subjects.push(subjectId);
+    await student.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      "Creating SUbject Failed, Please try again later",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ subject });
+};
+
 exports.getSubjectById = getSubjectById;
 exports.createSubject = createSubject;
 exports.updateSubject = updateSubject;
 exports.deleteSubject = deleteSubject;
+exports.joinSubject = joinSubject;

@@ -15,13 +15,19 @@ const DUMMY_DATA = [
 
 const getStudentById = async (req, res, next) => {
   const id = req.params.id;
-  const student = DUMMY_DATA.find((x) => x.student_id === id);
+  let student;
+  try {
+    student = await (await Student.findById(id)).populate("subjects");
+  } catch (error) {
+    return next(new HttpError("Could not find student", 500));
+  }
+
   if (!student) {
     return next(
       new HttpError("Could not find a student for the provided id", 404)
     );
   }
-  res.json({ message: student });
+  res.json({ student });
 };
 
 const login = async (req, res, next) => {

@@ -2,25 +2,21 @@ const HttpError = require("../models/http-error");
 
 const Teacher = require("../models/teacher-model");
 
-const DUMMY_DATA = [
-  {
-    teacher_id: "t1",
-    name: "Dhairay",
-    email: "test@teacher.com",
-    phone: "1234567890",
-    subjects: [],
-  },
-];
-
-const getTeacherById = (req, res, next) => {
+const getTeacherById = async (req, res, next) => {
   const id = req.params.id;
-  const teacher = DUMMY_DATA.find((x) => x.teacher_id === id);
+  let teacher;
+  try {
+    teacher = await Teacher.findById(id).populate("subjects");
+  } catch (error) {
+    return next(new HttpError("Could not find teacher", 500));
+  }
+
   if (!teacher) {
     return next(
       new HttpError("Could not find a teacher for the provided id", 404)
     );
   }
-  res.json({ message: teacher });
+  res.json({ teacher });
 };
 
 const login = async (req, res, next) => {
