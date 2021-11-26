@@ -12,12 +12,6 @@ import authStorage from "../auth/storage";
 
 import styles from "../styles/Account";
 
-const user = {
-  name: "DhairayTeacher",
-  email: "test@teacher.com",
-  phone: "9711714545",
-  password: "test_pwd",
-};
 
 function AccountScreen({ navigation }) {
   const { user, setUser } = useContext(AuthContext);

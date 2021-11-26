@@ -9,6 +9,7 @@ import FeedNavigator from "./FeedNavigator";
 import routes from "./routes";
 import AuthContext from "../auth/context";
 
+
 const Tab = createBottomTabNavigator();
 
 const AppNavigator = () => (

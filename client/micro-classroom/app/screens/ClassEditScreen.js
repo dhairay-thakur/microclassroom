@@ -10,7 +10,9 @@ import Modal from "react-native-modal";
 import subjectsApi from "../api/subject";
 import Text from "../components/Text";
 import AuthContext from "../auth/context";
-
+import AppTextInput from "../components/TextInput";
+import colors from "../config/colors";
+import AppButton from "../components/Button";
 import styles from "../styles/ClassEdit";
 import routes from "../navigation/routes";
 
@@ -26,21 +28,27 @@ const ClassEditScreen = ({ navigation, route }) => {
   const { user } = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  console.log(subject);
+  const [code, setCode] = useState("");
+
+  const handleSubmitJoin = async (studentId, subjectId) => {
+    setModalVisible(true);
+    const result = await subjectApi.joinClass(studentId, subjectId);
+    if (!result.ok) {
+      setModalVisible(false);
+      return alert("nahi hua");
+    }
+  };
   const handleSubmit = async (classDetails, { resetForm }) => {
     setLoading(true);
     let result;
     if (subject) {
       result = await subjectsApi.editClass(classDetails, subject._id);
     } else {
-      result = await subjectsApi.createClass(
-        classDetails,
-        "619dca7d06bf9e0ca61646cc"
-      );
+      result = await subjectsApi.createClass(classDetails, user.userId);
     }
     if (!result.ok) {
       setLoading(false);
-      return alert("Could Not Add Listing");
+      return alert("Could Not Add Subject");
     }
     resetForm();
     setModalVisible(true);
@@ -67,32 +75,54 @@ const ClassEditScreen = ({ navigation, route }) => {
         </Modal>
         <ActivityIndicator visible={loading} />
       </View>
-      <KeyboardAvoidingView>
-        <Form
-          initialValues={{
-            name: "",
-            meetLink: "",
-            description: "",
-            maxCapacity: 1,
-          }}
-          onSubmit={handleSubmit}
-          validationSchema={validationSchema}
-        >
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <FormField maxLength={255} name="name" placeholder="Subject Name" />
-            <FormField name="meetLink" placeholder="Meeting Link" />
-            <FormField name="maxCapacity" placeholder="Maximum Capacity" />
-            <FormField
-              maxLength={255}
-              multiline
-              name="description"
-              numberOfLines={3}
-              placeholder="Description"
-            />
-            <SubmitButton title="Create Class" />
-          </ScrollView>
-        </Form>
-      </KeyboardAvoidingView>
+      {user.isStudent && (
+        <View>
+          <AppTextInput
+            selectionColor={colors.secondary}
+            onChangeText={(enteredCode) => setCode(enteredCode)}
+            width="100%"
+            placeholder="Enter Class Code"
+          />
+          <AppButton
+            title="Join Class"
+            onPress={() => {
+              handleSubmitJoin(user.userId, code);
+            }}
+          />
+        </View>
+      )}
+      {!user.isStudent && (
+        <KeyboardAvoidingView>
+          <Form
+            initialValues={{
+              name: "",
+              meetLink: "",
+              description: "",
+              maxCapacity: 1,
+            }}
+            onSubmit={handleSubmit}
+            validationSchema={validationSchema}
+          >
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <FormField
+                maxLength={255}
+                name="name"
+                placeholder="Subject Name"
+              />
+              <FormField name="meetLink" placeholder="Meeting Link" />
+              <FormField name="maxCapacity" placeholder="Maximum Capacity" />
+              <FormField
+                maxLength={255}
+                multiline
+                name="description"
+                numberOfLines={3}
+                placeholder="Description"
+              />
+              <SubmitButton title="Create Class" />
+            </ScrollView>
+          </Form>
+        </KeyboardAvoidingView>
+      )}
     </Screen>
   );
 };

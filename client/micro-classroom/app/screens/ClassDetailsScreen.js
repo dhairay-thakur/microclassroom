@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import React, { useContext, useState } from "react";
+import { ScrollView, TouchableOpacity, View, Linking } from "react-native";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
 import routes from "../navigation/routes";
 import styles from "../styles/ClassDetails";
+import AuthContext from "../auth/context";
 
 const DayNames = [
   "Monday",
@@ -17,6 +18,7 @@ const DayNames = [
 
 const ClassDetailsScreen = ({ navigation, route }) => {
   const subject = route.params;
+  const { user } = useContext(AuthContext);
 
   return (
     <Screen>
@@ -24,8 +26,8 @@ const ClassDetailsScreen = ({ navigation, route }) => {
         <View style={styles.detailsContainer}>
           <Text style={styles.title}>{subject.name}</Text>
           <Text style={styles.description}>{subject.description}</Text>
-          <TouchableOpacity>
-            <Text style={styles.link}>Join Class {subject.meetLink}</Text>
+          <TouchableOpacity onPress={() => Linking.openURL(subject.meetLink)}>
+            <Text style={styles.link}>Join Class</Text>
           </TouchableOpacity>
           {subject.schedule.map(
             (item, key) =>
@@ -41,17 +43,21 @@ const ClassDetailsScreen = ({ navigation, route }) => {
               )
           )}
           <View style={styles.divider} />
-          <TouchableOpacity
-            onPress={() => navigation.navigate(routes.CLASS_EDIT, subject)}
-          >
-            <Text style={styles.link}>Edit Class Details</Text>
-          </TouchableOpacity>
+          {!user.isStudent && (
+            <TouchableOpacity
+              onPress={() => navigation.navigate(routes.CLASS_EDIT, subject)}
+            >
+              <Text style={styles.link}>Edit Class Details</Text>
+            </TouchableOpacity>
+          )}
           <View style={styles.divider} />
-          <TouchableOpacity
-            onPress={() => navigation.navigate(routes.SCHEDULE_EDIT, subject)}
-          >
-            <Text style={styles.link}>Edit Class Schedule</Text>
-          </TouchableOpacity>
+          {!user.isStudent && (
+            <TouchableOpacity
+              onPress={() => navigation.navigate(routes.SCHEDULE_EDIT, subject)}
+            >
+              <Text style={styles.link}>Edit Class Schedule</Text>
+            </TouchableOpacity>
+          )}
           <View style={styles.divider} />
         </View>
       </ScrollView>

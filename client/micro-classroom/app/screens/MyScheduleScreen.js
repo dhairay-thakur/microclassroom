@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import ActivityIndicator from "../components/ActivityIndicator";
 import Card from "../components/Card";
@@ -8,7 +8,8 @@ import Text from "../components/Text";
 import Button from "../components/Button";
 import useApi from "../hooks/useApi";
 import studentsApi from "../api/students";
-
+import teachersApi from "../api/teachers";
+import AuthContext from "../auth/context";
 import styles from "../styles/MySchedule";
 
 const DayNames = [
@@ -22,6 +23,9 @@ const DayNames = [
 ];
 
 const MySchedule = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
+  const authApi = user.isStudent ? studentsApi : teachersApi;
+
   const renderSchedule = (data) => {
     let s = [[], [], [], [], [], [], []];
     if (data.subjects) {
@@ -40,9 +44,9 @@ const MySchedule = ({ navigation }) => {
     error,
     loading,
     request: loadSubjects,
-  } = useApi(studentsApi.getScheduleById);
+  } = useApi(authApi.getScheduleById);
   useEffect(() => {
-    loadSubjects("61a061346207f76478522115");
+    loadSubjects(user.userId);
   }, []);
 
   return (
@@ -51,15 +55,13 @@ const MySchedule = ({ navigation }) => {
       {!loading && error && (
         <View style={styles.error}>
           <Text>Couldn't Load Schedule!</Text>
-          <Button
-            title={"retry"}
-            onPress={() => loadSubjects("61a061346207f76478522115")}
-          />
+          <Button title={"retry"} onPress={() => loadSubjects(user.userId)} />
         </View>
       )}
       {!loading && !error && (
         <FlatList
           refreshing={false}
+          onRefresh={() => loadSubjects(user.userId)}
           showsVerticalScrollIndicator={false}
           keyExtractor={(subject, idx) => idx}
           data={renderSchedule(data)}
