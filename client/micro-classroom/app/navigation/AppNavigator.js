@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ClassEditScreen from "../screens/ClassEditScreen";
@@ -7,6 +7,7 @@ import AccountNavigator from "./AccountNavigator";
 import NewClassButton from "./NewClassButton";
 import FeedNavigator from "./FeedNavigator";
 import routes from "./routes";
+import AuthContext from "../auth/context";
 
 const Tab = createBottomTabNavigator();
 

@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  createNativeStackNavigator ,
+  createNativeStackNavigator,
   TransitionPresets,
 } from "@react-navigation/native-stack";
 
@@ -8,7 +8,7 @@ import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 
-const Stack = createNativeStackNavigator ();
+const Stack = createNativeStackNavigator();
 
 const AuthNavigator = () => (
   <Stack.Navigator>
@@ -17,22 +17,8 @@ const AuthNavigator = () => (
       component={WelcomeScreen}
       options={{ headerShown: false }}
     />
-    <Stack.Screen
-      name="Login"
-      component={LoginScreen}
-      options={{
-        gestureEnabled: false,
-        ...TransitionPresets.ModalSlideFromBottomIOS,
-      }}
-    />
-    <Stack.Screen
-      name="Register"
-      component={RegisterScreen}
-      options={{
-        gestureEnabled: false,
-        ...TransitionPresets.ModalSlideFromBottomIOS,
-      }}
-    />
+    <Stack.Screen name="Login" component={LoginScreen} />
+    <Stack.Screen name="Register" component={RegisterScreen} />
   </Stack.Navigator>
 );
 

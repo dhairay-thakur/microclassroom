@@ -9,44 +9,53 @@ import {
   ErrorMessage,
 } from "../components/forms";
 
-// import jwtDecode from "jwt-decode";
-// import authApi from "../api/auth";
-// import AuthContext from "../auth/context";
-// import authStorage from "../auth/storage";
+import jwtDecode from "jwt-decode";
+import AuthContext from "../auth/context";
+import authStorage from "../auth/storage";
+import studentsApi from "../api/students";
+import teachersApi from "../api/teachers";
 
 import styles from "../styles/Register";
 import { ScrollView } from "react-native-gesture-handler";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required().label("Name"),
-  roll: Yup.string().required().label("Roll Number"),
   email: Yup.string().required().email().label("Email"),
-  mobileNumber: Yup.string().required().label("Mobile Number").length(10),
+  phone: Yup.string().required().label("Mobile Number").length(10),
   password: Yup.string().required().min(4).label("Password"),
 });
 
-const RegisterScreen = ({ isStudent }) => {
-  // const authContext = useContext(AuthContext);
+const RegisterScreen = ({ route }) => {
+  const isStudent = route.params;
+  const authApi = isStudent ? studentsApi : teachersApi;
+  const authContext = useContext(AuthContext);
   const [error, setError] = useState(false);
+
   const handleSubmit = async (userInfo) => {
-    // const result = await authApi.register(userInfo);
-    // if (!result.ok) {
-    //   console.log(result);
-    //   return setError(true);
-    // }
-    // setError(false);
-    // const { data: authToken } = await authApi.login(
-    //   userInfo.email,
-    //   userInfo.password
-    // );
-    // const user = jwtDecode(authToken.token);
-    // authContext.setUser(user);
-    // authStorage.storeToken(authToken.token);
+    const result = await authApi.register(userInfo);
+    if (!result.ok) {
+      console.log(result);
+      return setError(true);
+    }
+    setError(false);
+    const { data: authToken } = await authApi.login(
+      userInfo.email,
+      userInfo.password
+    );
+    const user = jwtDecode(authToken.token);
+    authContext.setUser(user);
+    authStorage.storeToken(authToken.token);
   };
+
   return (
     <Screen style={styles.container}>
       <Form
-        initialValues={{ name: "", email: "", password: "" }}
+        initialValues={{
+          name: "",
+          email: "",
+          password: "",
+          phone: "",
+        }}
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
       >
@@ -81,14 +90,14 @@ const RegisterScreen = ({ isStudent }) => {
             keyboardType="number-pad"
             textContentType="telephoneNumber"
             icon="phone"
-            name="mobileNumber"
+            name="phone"
             placeholder="Mobile Number"
           />
           {isStudent && (
             <FormField
               autoCorrect={false}
               icon="school"
-              name="roll"
+              name="rollNo"
               placeholder="Roll Number"
             />
           )}

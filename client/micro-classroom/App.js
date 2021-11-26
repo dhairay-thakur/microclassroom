@@ -1,35 +1,32 @@
-import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import AppLoading from "expo-app-loading";
 import { NavigationContainer } from "@react-navigation/native";
 import navigationTheme from "./app/navigation/navigationTheme";
 import AppNavigator from "./app/navigation/AppNavigator";
-// import AuthNavigator from "./app/navigation/AuthNavigator";
-// import AuthContext from "./app/auth/context";
-import LoginScreen from "./app/screens/LoginScreen";
-import WelcomeScreen from "./app/screens/WelcomeScreen";
-import RegisterScreen from "./app/screens/RegisterScreen";
-import ClassDetailsScreen from "./app/screens/ClassDetailsScreen";
-import ClassEditScreen from "./app/screens/ClassEditScreen";
-import AccountScreen from "./app/screens/AccountScreen";
-import ClassScheduleEdit from "./app/screens/ClassScheduleEdit";
-import ClassesScreen from "./app/screens/ClassesScreen";
-import JoinClassScreen from "./app/screens/JoinClassScreen";
+import AuthNavigator from "./app/navigation/AuthNavigator";
+import AuthContext from "./app/auth/context";
+import authStorage from "./app/auth/storage";
 
 export default function App() {
+  const [user, setUser] = useState(null);
+  const [isReady, setIsReady] = useState(false);
+  const restoreUser = async () => {
+    const user = await authStorage.getUser();
+    if (user) setUser(user);
+  };
+  if (!isReady)
+    return (
+      <AppLoading
+        startAsync={restoreUser}
+        onFinish={() => setIsReady(true)}
+        onError={(err) => console.log(err)}
+      />
+    );
   return (
-    // <View style={styles.container}>
-    //   <JoinClassScreen />
-    //   <StatusBar style="auto" />
-    // </View>
-    <NavigationContainer theme={navigationTheme}>
-      <AppNavigator />
-    </NavigationContainer>
+    <AuthContext.Provider value={{ user, setUser }}>
+      <NavigationContainer theme={navigationTheme}>
+        {user ? <AppNavigator /> : <AuthNavigator />}
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

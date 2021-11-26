@@ -9,9 +9,7 @@ const subjectSchema = new Schema({
   meetLink: { type: String },
   maxCapacity: { type: Number, required: true },
   schedule: { type: Array, required: true },
-  attendees: [
-    { type: mongoose.Types.ObjectId, required: true, ref: "Students" },
-  ],
+  attendees: [{ type: mongoose.Types.ObjectId, ref: "Students" }],
 });
-  
+
 module.exports = mongoose.model("Subjects", subjectSchema);

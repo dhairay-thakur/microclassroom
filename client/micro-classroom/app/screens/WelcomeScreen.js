@@ -9,13 +9,14 @@ import RadioForm, {
   RadioButtonInput,
   RadioButtonLabel,
 } from "react-native-simple-radio-button";
+import routes from "../navigation/routes";
 
 let options = [
   { label: "Student", value: 0 },
   { label: "Teacher", value: 1 },
 ];
 
-function WelcomeScreen() {
+const WelcomeScreen = ({ navigation }) => {
   const [isStudent, setIsStudent] = useState(true);
   return (
     <View style={styles.background}>
@@ -41,13 +42,18 @@ function WelcomeScreen() {
         <Button
           title="Login"
           onPress={() => {
-            console.log(isStudent);
+            navigation.navigate(routes.LOGIN, isStudent);
           }}
         />
-        <Button title="Register" onPress={() => {}} />
+        <Button
+          title="Register"
+          onPress={() => {
+            navigation.navigate(routes.REGISTER, isStudent);
+          }}
+        />
       </View>
     </View>
   );
-}
+};
 
 export default WelcomeScreen;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import ActivityIndicator from "../components/ActivityIndicator";
 import Card from "../components/Card";
@@ -9,21 +9,23 @@ import AppButton from "../components/Button";
 import useApi from "../hooks/useApi";
 import studentsApi from "../api/students";
 import teachersApi from "../api/teachers";
+import AuthContext from "../auth/context";
 
 import styles from "../styles/Classes";
 
 const ClassesScreen = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
+  const authApi = user.isStudent ? studentsApi : teachersApi;
   const {
     data,
     error,
     loading,
     request: loadSubjects,
-  } = useApi(teachersApi.getScheduleById);
+  } = useApi(authApi.getScheduleById);
   useEffect(() => {
-    loadSubjects("619dca7d06bf9e0ca61646cc");
+    loadSubjects(user.userId.toString());
   }, []);
 
-  console.log(data.subjects);
   return (
     <Screen style={styles.screen}>
       <ActivityIndicator visible={loading} />
@@ -32,14 +34,14 @@ const ClassesScreen = ({ navigation }) => {
           <AppText>Couldn't Load Classes!</AppText>
           <AppButton
             title={"retry"}
-            onPress={() => loadSubjects("619dca7d06bf9e0ca61646cc")}
+            onPress={() => loadSubjects(user.userId)}
           />
         </View>
       )}
       {!loading && !error && (
         <FlatList
           refreshing={loading}
-          onRefresh={() => loadSubjects("619dca7d06bf9e0ca61646cc")}
+          onRefresh={() => loadSubjects(user.userId)}
           showsVerticalScrollIndicator={false}
           data={data.subjects}
           keyExtractor={(subject) => subject._id.toString()}

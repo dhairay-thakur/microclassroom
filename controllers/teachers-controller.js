@@ -1,5 +1,6 @@
 const HttpError = require("../models/http-error");
-
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const Teacher = require("../models/teacher-model");
 
 const getTeacherById = async (req, res, next) => {
@@ -43,7 +44,7 @@ const getScheduleById = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
-
+  console.log(email, password);
   let existingTeacher;
   try {
     existingTeacher = await Teacher.findOne({ email: email });
@@ -57,39 +58,40 @@ const login = async (req, res, next) => {
     );
   }
 
-  // let isValidPassword;
-  // try {
-  //   isValidPassword = await bcrypt.compare(password, existingTeacher.password);
-  // } catch (error) {
-  //   console.log(error);
-  //   return next(new Error("Login Failed, Please Try Again Later"));
-  // }
+  let isValidPassword;
+  console.log(existingTeacher);
+  try {
+    isValidPassword = await bcrypt.compare(password, existingTeacher.password);
+  } catch (error) {
+    console.log(error);
+    return next(new HttpError("Login Failed, Please Try Again Later", 500));
+  }
 
-  // if (!isValidPassword) {
-  //   return next(new Error("Wrong Password"));
-  // }
+  if (!isValidPassword) {
+    return next(new HttpError("Wrong Password", 400));
+  }
 
-  // let token;
-  // try {
-  //   token = jwt.sign(
-  //     {
-  //       userId: existingTeacher.id,
-  //       email: existingTeacher.email,
-  //       name: existingTeacher.name,
-  //     },
-  //     "sellitup-private-key",
-  //     { expiresIn: "7d" }
-  //   );
-  // } catch (error) {
-  //   console.log(error);
-  //   return next(new Error("Login Failed, Please Try Again Later"));
-  // }
-
-  res.json({ teacher: existingTeacher.toObject({ getters: true }) });
+  let token;
+  try {
+    token = jwt.sign(
+      {
+        userId: existingTeacher.id,
+        email: existingTeacher.email,
+        name: existingTeacher.name,
+        isStudent: false,
+      },
+      "micro-classroom-private-key",
+      { expiresIn: "7d" }
+    );
+  } catch (error) {
+    console.log(error);
+    return next(new HttpError("Login Failed, Please Try Again Later", 400));
+  }
+  res.status(201).json({ token });
 };
 
 const signup = async (req, res, next) => {
-  const { name, email, password, phone, rollNo } = req.body;
+  const { name, email, password, phone } = req.body;
 
   let existingUser;
   try {
@@ -103,18 +105,18 @@ const signup = async (req, res, next) => {
     return next(new HttpError("User Already Exists, Please Login Instead"));
   }
 
-  // let hashedPassword;
-  // try {
-  //   hashedPassword = await bcrypt.hash(password, 12);
-  // } catch (error) {
-  //   console.log(error);
-  //   return next(new Error("Signup Failed, Please Try Again Later"));
-  // }
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 12);
+  } catch (error) {
+    console.log(error);
+    return next(new Error("Signup Failed, Please Try Again Later"));
+  }
 
   const createdUser = new Teacher({
     name,
     email,
-    password,
+    password: hashedPassword,
     phone,
     subjects: [],
   });
@@ -126,23 +128,24 @@ const signup = async (req, res, next) => {
     return next(new HttpError("Signup Failed, Please Try Again Later"));
   }
 
-  // let token;
-  // try {
-  //   token = jwt.sign(
-  //     {
-  //       userId: createdUser.id,
-  //       email: createdUser.email,
-  //       name: createdUser.name,
-  //     },
-  //     "sellitup-private-key",
-  //     { expiresIn: "7d" }
-  //   );
-  // } catch (error) {
-  //   console.log(error);
-  //   return next(new Error("Signup Failed, Please Try Again Later"));
-  // }
+  let token;
+  try {
+    token = jwt.sign(
+      {
+        userId: createdUser.id,
+        email: createdUser.email,
+        name: createdUser.name,
+        isStudent: false,
+      },
+      "micro-classroom-private-key",
+      { expiresIn: "7d" }
+    );
+  } catch (error) {
+    console.log(error);
+    return next(new HttpError("Signup Failed, Please Try Again Later", 500));
+  }
 
-  res.status(201).json({ teacher: createdUser.toObject({ getters: true }) });
+  res.status(201).json({ token });
 };
 
 exports.getTeacherById = getTeacherById;

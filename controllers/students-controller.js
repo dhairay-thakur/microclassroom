@@ -1,6 +1,8 @@
 const HttpError = require("../models/http-error");
-
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const Student = require("../models/student-model");
+const { createSubject } = require("./subject-controller");
 
 const DUMMY_DATA = [
   {
@@ -67,35 +69,36 @@ const login = async (req, res, next) => {
     );
   }
 
-  // let isValidPassword;
-  // try {
-  //   isValidPassword = await bcrypt.compare(password, existingStudent.password);
-  // } catch (error) {
-  //   console.log(error);
-  //   return next(new Error("Login Failed, Please Try Again Later"));
-  // }
+  let isValidPassword;
+  try {
+    isValidPassword = await bcrypt.compare(password, existingStudent.password);
+  } catch (error) {
+    console.log(error);
+    return next(new HttpError("Login Failed, Please Try Again Later", 500));
+  }
 
-  // if (!isValidPassword) {
-  //   return next(new Error("Wrong Password"));
-  // }
+  if (!isValidPassword) {
+    return next(new HttpError("Wrong Password", 400));
+  }
 
-  // let token;
-  // try {
-  //   token = jwt.sign(
-  //     {
-  //       userId: existingStudent.id,
-  //       email: existingStudent.email,
-  //       name: existingStudent.name,
-  //     },
-  //     "sellitup-private-key",
-  //     { expiresIn: "7d" }
-  //   );
-  // } catch (error) {
-  //   console.log(error);
-  //   return next(new Error("Login Failed, Please Try Again Later"));
-  // }
+  let token;
+  try {
+    token = jwt.sign(
+      {
+        userId: existingStudent.id,
+        email: existingStudent.email,
+        name: existingStudent.name,
+        isStudent: true,
+      },
+      "micro-classroom-private-key",
+      { expiresIn: "7d" }
+    );
+  } catch (error) {
+    console.log(error);
+    return next(new HttpError("Login Failed, Please Try Again Later", 500));
+  }
 
-  res.json({ student: existingStudent.toObject({ getters: true }) });
+  res.status(201).json({ token });
 };
 
 const signup = async (req, res, next) => {
@@ -113,47 +116,48 @@ const signup = async (req, res, next) => {
     return next(new HttpError("User Already Exists, Please Login Instead"));
   }
 
-  // let hashedPassword;
-  // try {
-  //   hashedPassword = await bcrypt.hash(password, 12);
-  // } catch (error) {
-  //   console.log(error);
-  //   return next(new Error("Signup Failed, Please Try Again Later"));
-  // }
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 12);
+  } catch (error) {
+    console.log(error);
+    return next(new Error("Signup Failed, Please Try Again Later"));
+  }
 
-  const createdStudent = new Student({
+  const createdUser = new Student({
     name,
     email,
-    password,
+    password: hashedPassword,
     phone,
     rollNo,
     subjects: [],
   });
-
+  console.log(createdUser);
   try {
-    await createdStudent.save();
+    await createdUser.save();
   } catch (error) {
     console.log(error);
     return next(new HttpError("Signup Failed, Please Try Again Later"));
   }
+  console.log(createdUser);
+  let token;
+  try {
+    token = jwt.sign(
+      {
+        userId: createdUser.id,
+        email: createdUser.email,
+        name: createdUser.name,
+        isStudent: true,
+      },
+      "micro-classroom-private-key",
+      { expiresIn: "7d" }
+    );
+  } catch (error) {
+    console.log(error);
+    return next(new HttpError("Signup Failed, Please Try Again Later", 400));
+  }
 
-  // let token;
-  // try {
-  //   token = jwt.sign(
-  //     {
-  //       userId: createdUser.id,
-  //       email: createdUser.email,
-  //       name: createdUser.name,
-  //     },
-  //     "sellitup-private-key",
-  //     { expiresIn: "7d" }
-  //   );
-  // } catch (error) {
-  //   console.log(error);
-  //   return next(new Error("Signup Failed, Please Try Again Later"));
-  // }
-
-  res.status(201).json({ student: createdStudent.toObject({ getters: true }) });
+  res.status(201).json({ token });
 };
 
 exports.getStudentById = getStudentById;

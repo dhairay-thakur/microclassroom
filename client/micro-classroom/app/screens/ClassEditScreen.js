@@ -9,7 +9,7 @@ import Screen from "../components/Screen";
 import Modal from "react-native-modal";
 import subjectsApi from "../api/subject";
 import Text from "../components/Text";
-// import AuthContext from "../auth/context";
+import AuthContext from "../auth/context";
 
 import styles from "../styles/ClassEdit";
 import routes from "../navigation/routes";
@@ -23,7 +23,7 @@ const validationSchema = Yup.object().shape({
 
 const ClassEditScreen = ({ navigation, route }) => {
   const subject = route.params;
-  // const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   console.log(subject);

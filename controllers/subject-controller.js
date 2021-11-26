@@ -193,7 +193,6 @@ const joinSubject = async (req, res, next) => {
       new HttpError("Could not find a subject for the provided id", 404)
     );
   }
-  let subjectsAdded = [];
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -205,14 +204,9 @@ const joinSubject = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     const error = new HttpError(
-      "Creating Subject Failed, Please try again later",
+      "Joining Class Failed, Please try again later",
       500
     );
-    return next(error);
-  }
-  console.log(subjectsAdded);
-  if (subjectsAdded.length === 0) {
-    const error = new HttpError("Student Already Enrolled", 400);
     return next(error);
   }
 
