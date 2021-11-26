@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import ActivityIndicator from "../components/ActivityIndicator";
 import Card from "../components/Card";
@@ -6,49 +6,10 @@ import Screen from "../components/Screen";
 import routes from "../navigation/routes";
 import Text from "../components/Text";
 import Button from "../components/Button";
-// import useApi from "../hooks/useApi";
-// import listingsApi from "../api/listings";
+import useApi from "../hooks/useApi";
+import studentsApi from "../api/students";
 
 import styles from "../styles/MySchedule";
-
-const dummy = [
-  {
-    id: 0,
-    teacher: "6192c1e9032a756e2ab71bd4",
-    name: "CS101",
-    schedule: [
-      ["17:30", "18:30", 0],
-      [],
-      ["13:00", "14:00", 10],
-      [],
-      ["18:00", "19:00", 20],
-      [],
-      [],
-    ],
-    meetLink: "test_link",
-    maxCapacity: 10,
-    description: "this is computer science",
-    attendees: [],
-  },
-  {
-    id: 1,
-    teacher: "6192c1e9032a756e2ab71bd4",
-    name: "CS102",
-    schedule: [
-      [],
-      ["11:00", "12:00", 0],
-      [],
-      [],
-      ["17:00", "18:00", 20],
-      [],
-      [],
-    ],
-    meetLink: "test_link",
-    maxCapacity: 10,
-    description: "this is computer science",
-    attendees: [],
-  },
-];
 
 const DayNames = [
   "Monday",
@@ -61,83 +22,85 @@ const DayNames = [
 ];
 
 const MySchedule = ({ navigation }) => {
-  const [schedule, setSchedule] = useState([]);
-  useEffect(() => {
+  const renderSchedule = (data) => {
     let s = [[], [], [], [], [], [], []];
-    dummy.forEach((subject) => {
-      subject.schedule.forEach((x, idx) => {
-        if (x.length > 0) {
-          s[idx].push(subject);
-        }
+    if (data.subjects) {
+      data.subjects.forEach((subject) => {
+        subject.schedule.forEach((x, idx) => {
+          if (x.length > 0) {
+            s[idx].push(subject);
+          }
+        });
       });
-    });
-    setSchedule(s);
+    }
+    return s;
+  };
+  const {
+    data,
+    error,
+    loading,
+    request: loadSubjects,
+  } = useApi(studentsApi.getScheduleById);
+  useEffect(() => {
+    loadSubjects("61a061346207f76478522115");
   }, []);
-  //   console.log(schedule);
-  //   const {
-  //   data,
-  //   error,
-  //   loading,
-  //   request: loadListings,
-  // } = useApi(listingsApi.getAllListings);
-  // useEffect(() => {
-  // loadListings();
-  //   }, []);
 
   return (
     <Screen style={styles.screen}>
-      {/* <ActivityIndicator visible={loading} /> */}
-      {/* {!loading && error && (
+      <ActivityIndicator visible={loading} />
+      {!loading && error && (
         <View style={styles.error}>
-          <AppText>Couldn't load listings!</AppText>
-          <AppButton title={"retry"} onPress={loadListings} />
+          <Text>Couldn't Load Schedule!</Text>
+          <Button
+            title={"retry"}
+            onPress={() => loadSubjects("61a061346207f76478522115")}
+          />
         </View>
-      )} */}
-      {/* {!loading && !error && ( */}
-      <FlatList
-        refreshing={false}
-        // onRefresh={loadListings}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(subject, idx) => idx}
-        data={schedule}
-        renderItem={({ item, index }) => (
-          <>
-            {item.length > 0 && (
-              <Text style={styles.day}>{DayNames[index]}</Text>
-            )}
-            <FlatList
-              refreshing={false}
-              // onRefresh={loadListings}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(subject, idx) => idx}
-              data={item}
-              renderItem={({ item }) => (
-                <View style={styles.card}>
-                  <View style={styles.detailsContainer}>
-                    <View>
-                      <Text style={styles.title} numberOfLines={1}>
-                        {item.name}
-                      </Text>
-                      <Text style={styles.subTitle} numberOfLines={1}>
-                        {item.schedule[index][0]} - {item.schedule[index][1]}
-                      </Text>
-                    </View>
-                    <Button
-                      onPress={() => {
-                        console.log(item);
-                      }}
-                      title="Join"
-                      width="30%"
-                    />
-                  </View>
-                </View>
+      )}
+      {!loading && !error && (
+        <FlatList
+          refreshing={false}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(subject, idx) => idx}
+          data={renderSchedule(data)}
+          renderItem={({ item, index }) => (
+            <>
+              {item.length > 0 && (
+                <Text style={styles.day}>{DayNames[index]}</Text>
               )}
-            />
-            {item.length > 0 && <View style={styles.divider} />}
-          </>
-        )}
-      />
-      {/* )} */}
+              <FlatList
+                refreshing={false}
+                onRefresh={loadSubjects}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={(subject, idx) => idx}
+                data={item}
+                renderItem={({ item }) => (
+                  <View style={styles.card}>
+                    <View style={styles.detailsContainer}>
+                      <View>
+                        <Text style={styles.title} numberOfLines={1}>
+                          {item.name}
+                        </Text>
+                        <Text style={styles.subTitle} numberOfLines={1}>
+                          {item.schedule[index][0]} - {item.schedule[index][1]}
+                        </Text>
+                      </View>
+                      <Button
+                        onPress={() => {
+                          console.log(item);
+                        }}
+                        title="Join"
+                        width="30%"
+                      />
+                    </View>
+                  </View>
+                )}
+              />
+              {item.length > 0 && <View style={styles.divider} />}
+            </>
+          )}
+        />
+      )}
     </Screen>
   );
 };

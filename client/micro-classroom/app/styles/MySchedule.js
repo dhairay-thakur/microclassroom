@@ -3,7 +3,7 @@ import colors from "../config/colors";
 
 const styles = StyleSheet.create({
   screen: {
-    padding: 12,
+    paddingHorizontal: 12,
     backgroundColor: colors.background,
   },
   error: {
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     flexDirection: "row",
-    paddingVertical: 10,
+    paddingHorizontal: 10,
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 10,

@@ -3,7 +3,7 @@ import colors from "../config/colors";
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingHorizontal: 10,
   },
   modalContainer: { position: "absolute" },
   modal: { margin: 0, alignItems: "center", justifyContent: "center" },
@@ -15,11 +15,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     alignItems: "center",
   },
-  posting:{
-    justifyContent:'center',
-    alignItems:'center',
-    fontSize:24,
-  }
+  title: {
+    paddingBottom: 8,
+    fontSize: 18,
+    textAlign: "center",
+  },
+  posting: {
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: 24,
+  },
 });
 
 export default styles;

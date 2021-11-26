@@ -27,7 +27,28 @@ const getStudentById = async (req, res, next) => {
       new HttpError("Could not find a student for the provided id", 404)
     );
   }
-  res.json({ student });
+  res.json({ student: student.toObject({ getters: true }) });
+};
+
+const getScheduleById = async (req, res, next) => {
+  const id = req.params.id;
+  let student;
+  try {
+    student = await Student.findById(id).populate("subjects");
+  } catch (error) {
+    return next(new HttpError("Could not find student", 500));
+  }
+
+  if (!student) {
+    return next(
+      new HttpError("Could not find a student for the provided id", 404)
+    );
+  }
+  const subjects = student.subjects;
+  subjects.forEach((subject) => {
+    subject.toObject({ getters: true });
+  });
+  res.json({ subjects });
 };
 
 const login = async (req, res, next) => {
@@ -136,5 +157,6 @@ const signup = async (req, res, next) => {
 };
 
 exports.getStudentById = getStudentById;
+exports.getScheduleById = getScheduleById;
 exports.login = login;
 exports.signup = signup;

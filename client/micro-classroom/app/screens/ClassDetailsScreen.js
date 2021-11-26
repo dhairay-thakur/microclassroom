@@ -3,9 +3,6 @@ import { ScrollView, TouchableOpacity, View } from "react-native";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
 import routes from "../navigation/routes";
-// import routes from "../navigation/routes";
-// import useApi from "../hooks/useApi";
-// import usersApi from "../api/users";
 import styles from "../styles/ClassDetails";
 
 const DayNames = [
@@ -20,13 +17,6 @@ const DayNames = [
 
 const ClassDetailsScreen = ({ navigation, route }) => {
   const subject = route.params;
-  const [modalVisible, setModalVisible] = useState(false);
-  // const { data, error, loading, request: loadUserDetails } = useApi(
-  //   usersApi.getUserDetails
-  // );
-  // useEffect(() => {
-  //   loadUserDetails(subject.userId);
-  // }, []);
 
   return (
     <Screen>

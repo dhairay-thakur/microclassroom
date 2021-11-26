@@ -16,7 +16,29 @@ const getTeacherById = async (req, res, next) => {
       new HttpError("Could not find a teacher for the provided id", 404)
     );
   }
-  res.json({ teacher });
+  res.json({ teacher: teacher.toObject({ getters: true }) });
+};
+
+const getScheduleById = async (req, res, next) => {
+  const id = req.params.id;
+  let teacher;
+  try {
+    teacher = await Teacher.findById(id).populate("subjects");
+  } catch (error) {
+    console.log(error);
+    return next(new HttpError("Could not find teacher", 500));
+  }
+
+  if (!teacher) {
+    return next(
+      new HttpError("Could not find a teacher for the provided id", 404)
+    );
+  }
+  const subjects = teacher.subjects;
+  // subjects.forEach((subject) => {
+  //   subject.toObject({ getters: true });
+  // });
+  res.json({ subjects });
 };
 
 const login = async (req, res, next) => {
@@ -124,5 +146,6 @@ const signup = async (req, res, next) => {
 };
 
 exports.getTeacherById = getTeacherById;
+exports.getScheduleById = getScheduleById;
 exports.login = login;
 exports.signup = signup;

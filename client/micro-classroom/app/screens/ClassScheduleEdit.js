@@ -1,34 +1,63 @@
-import React from "react";
+import React, { useState } from "react";
 import { KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { Form, FormScheduleEdit, SubmitButton } from "../components/forms";
 import Screen from "../components/Screen";
-// import listingsApi from "../api/listings";
+import Done from "../components/Done";
+import ActivityIndicator from "../components/ActivityIndicator";
+import Modal from "react-native-modal";
+import Text from "../components/Text";
+import subjectsApi from "../api/subject";
 // import AuthContext from "../auth/context";
 import styles from "../styles/ClassEdit";
+import routes from "../navigation/routes";
 
 const ClassScheduleEdit = ({ navigation, route }) => {
   const subject = route.params;
+  // console.log(subject);
+
   // const { user } = useContext(AuthContext);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // const [progress, setProgress] = useState(0);
-  // const [modalVisible, setModalVisible] = useState(false);
-
-  // const handleSubmit = async (listing, { resetForm }) => {
-  //   setModalVisible(true);
-  //   const result = await listingsApi.addListing(
-  //     listing,
-  //     user.userId,
-  //     (progress) => setProgress(progress)
-  //   );
-  //   if (!result.ok) {
-  //     setModalVisible(false);
-  //     return alert("Could Not Add Listing");
-  //   }
-  //   resetForm();
-  // };
+  const handleSubmit = async (schedule, { resetForm }) => {
+    setLoading(true);
+    const result = await subjectsApi.updateSchedule(
+      schedule,
+      subject._id,
+      subject.maxCapacity,
+      subject.attendees.length
+    );
+    if (!result.ok) {
+      // setModalVisible(false);
+      setLoading(false);
+      return alert("Could Not Add Listing");
+    }
+    setModalVisible(true);
+    setLoading(false);
+    resetForm();
+  };
   return (
     <Screen style={styles.container}>
-      <View style={styles.modalContainer}></View>
+      {subject && <Text style={styles.title}>{subject.name}</Text>}
+      <View style={styles.modalContainer}>
+        <Modal
+          useNativeDriver
+          backdropOpacity={0.5}
+          isVisible={modalVisible}
+          style={styles.modal}
+          onBackButtonPress={() => setModalVisible(false)}
+        >
+          <View style={styles.modalView}>
+            <Done
+              onAnimationFinish={() => {
+                setModalVisible(false);
+                navigation.navigate(routes.Classes);
+              }}
+            />
+          </View>
+        </Modal>
+        <ActivityIndicator visible={loading} />
+      </View>
       <KeyboardAvoidingView>
         <Form
           initialValues={{
@@ -40,8 +69,7 @@ const ClassScheduleEdit = ({ navigation, route }) => {
             5: subject.schedule[5],
             6: subject.schedule[6],
           }}
-          // onSubmit={handleSubmit}
-          onSubmit={(v) => console.log(v)}
+          onSubmit={handleSubmit}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
             <FormScheduleEdit name={0} schedule={subject.schedule[0]} />

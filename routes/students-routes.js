@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.get("/:id", studentsController.getStudentById);
 
+router.get("/schedule/:id", studentsController.getScheduleById);
+
 router.post("/signup", studentsController.signup);
 
 router.post("/login", studentsController.login);

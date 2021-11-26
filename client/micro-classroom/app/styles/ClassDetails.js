@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   detailsContainer: {
-    padding: 20,
+    paddingHorizontal: 20,
   },
   modalContainer: { position: "absolute" },
   modal: { margin: 0, alignItems: "center", justifyContent: "center" },

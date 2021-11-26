@@ -71,7 +71,6 @@ const createSubject = async (req, res, next) => {
   if (!teacherId) {
     return next(new Error("Teacher does not exist!"));
   }
-
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -106,7 +105,9 @@ const updateSubject = async (req, res, next) => {
     );
   }
   if (name) subject.name = name;
-  if (schedule) subject.schedule = schedule;
+  if (schedule) {
+    for (let i = 0; i < 7; i++) subject.schedule[i] = schedule[i];
+  }
   if (meetLink) subject.meetLink = meetLink;
   if (maxCapacity) subject.maxCapacity = maxCapacity;
   if (description) subject.description = description;
@@ -114,6 +115,7 @@ const updateSubject = async (req, res, next) => {
   try {
     await subject.save();
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
       "Updating SUbject Failed, Please try again later",
       500
@@ -151,7 +153,6 @@ const deleteSubject = async (req, res, next) => {
     await subject.remove();
     subject.teacher.subjects.pull(subject);
     await subject.teacher.save({ session: sess });
-    console.log(subject.attendees);
     for (const student of subject.attendees) {
       student.subjects.pull(subject);
       await student.save({ session: sess });
@@ -170,7 +171,7 @@ const joinSubject = async (req, res, next) => {
   const subjectId = req.params.id;
   let subject, student;
   try {
-    subject = await Subject.findById(subjectId);
+    subject = await (await Subject.findById(subjectId)).populate("attendees");
   } catch (error) {
     return next(new HttpError("Could not add attendee", 500));
   }
@@ -182,7 +183,7 @@ const joinSubject = async (req, res, next) => {
   }
 
   try {
-    student = await Student.findById(studentId);
+    student = await Student.findById(studentId).populate("subjects");
   } catch (error) {
     return next(new HttpError("Could not add attendee", 500));
   }
@@ -192,26 +193,30 @@ const joinSubject = async (req, res, next) => {
       new HttpError("Could not find a subject for the provided id", 404)
     );
   }
-  if (student.subjects.includes(subjectId)) {
-    return next(new HttpError("Student already enrolled", 400));
-  }
-  subject.attendees.push(studentId);
+  let subjectsAdded = [];
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
+    subjectsAdded = subject.attendees.addToSet(student);
     await subject.save({ session: sess });
-    student.subjects.push(subjectId);
+    subjectsAdded = student.subjects.addToSet(subject);
     await student.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
-      "Creating SUbject Failed, Please try again later",
+      "Creating Subject Failed, Please try again later",
       500
     );
     return next(error);
   }
+  console.log(subjectsAdded);
+  if (subjectsAdded.length === 0) {
+    const error = new HttpError("Student Already Enrolled", 400);
+    return next(error);
+  }
 
-  res.status(200).json({ subject });
+  res.status(200).json({ message: "Student Enrolled" });
 };
 
 exports.getSubjectById = getSubjectById;

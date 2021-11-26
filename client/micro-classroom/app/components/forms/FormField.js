@@ -3,18 +3,12 @@ import { useFormikContext } from "formik";
 
 import TextInput from "../TextInput";
 import ErrorMessage from "./ErrorMessage";
-import { TouchableWithoutFeedback, View } from "react-native";
 
 import colors from "../../config/colors";
 
 const AppFormField = ({ name, width, ...otherProps }) => {
-  const {
-    setFieldTouched,
-    errors,
-    touched,
-    values,
-    setFieldValue,
-  } = useFormikContext();
+  const { setFieldTouched, errors, touched, values, setFieldValue } =
+    useFormikContext();
 
   return (
     <>

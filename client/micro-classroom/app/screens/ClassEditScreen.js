@@ -7,10 +7,12 @@ import Done from "../components/Done";
 import ActivityIndicator from "../components/ActivityIndicator";
 import Screen from "../components/Screen";
 import Modal from "react-native-modal";
-// import listingsApi from "../api/listings";
+import subjectsApi from "../api/subject";
+import Text from "../components/Text";
 // import AuthContext from "../auth/context";
 
 import styles from "../styles/ClassEdit";
+import routes from "../navigation/routes";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required().min(1).label("Subject Name"),
@@ -19,29 +21,35 @@ const validationSchema = Yup.object().shape({
   description: Yup.string().label("Description"),
 });
 
-const ClassEditScreen = () => {
+const ClassEditScreen = ({ navigation, route }) => {
+  const subject = route.params;
   // const { user } = useContext(AuthContext);
-
-  // const [progress, setProgress] = useState(0);
-  // const [modalVisible, setModalVisible] = useState(false);
-
-  // const handleSubmit = async (listing, { resetForm }) => {
-  //   setModalVisible(true);
-  //   const result = await listingsApi.addListing(
-  //     listing,
-  //     user.userId,
-  //     (progress) => setProgress(progress)
-  //   );
-  //   if (!result.ok) {
-  //     setModalVisible(false);
-  //     return alert("Could Not Add Listing");
-  //   }
-  //   resetForm();
-  // };
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  console.log(subject);
+  const handleSubmit = async (classDetails, { resetForm }) => {
+    setLoading(true);
+    let result;
+    if (subject) {
+      result = await subjectsApi.editClass(classDetails, subject._id);
+    } else {
+      result = await subjectsApi.createClass(
+        classDetails,
+        "619dca7d06bf9e0ca61646cc"
+      );
+    }
+    if (!result.ok) {
+      setLoading(false);
+      return alert("Could Not Add Listing");
+    }
+    resetForm();
+    setModalVisible(true);
+  };
   return (
     <Screen style={styles.container}>
+      {subject && <Text style={styles.title}>{subject.name}</Text>}
       <View style={styles.modalContainer}>
-        {/* <Modal
+        <Modal
           useNativeDriver
           backdropOpacity={0.5}
           isVisible={modalVisible}
@@ -49,16 +57,15 @@ const ClassEditScreen = () => {
           onBackButtonPress={() => setModalVisible(false)}
         >
           <View style={styles.modalView}>
-            {progress === 1 && (
-              <Done
-                onAnimationFinish={() => {
-                  setModalVisible(false);
-                }}
-              />
-            )}
-            <ActivityIndicator visible={progress !== 1} />
+            <Done
+              onAnimationFinish={() => {
+                setModalVisible(false);
+                navigation.navigate(routes.Classes);
+              }}
+            />
           </View>
-        </Modal> */}
+        </Modal>
+        <ActivityIndicator visible={loading} />
       </View>
       <KeyboardAvoidingView>
         <Form
@@ -68,7 +75,7 @@ const ClassEditScreen = () => {
             description: "",
             maxCapacity: 1,
           }}
-          // onSubmit={handleSubmit}
+          onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
           <ScrollView showsVerticalScrollIndicator={false}>

@@ -9,7 +9,13 @@ const studentSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true, minlength: 6 },
   phone: { type: String, required: true },
-  subjects: [{ type: mongoose.Types.ObjectId, required: true, ref: "Subjects" }],
+  subjects: [
+    {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "Subjects",
+    },
+  ],
 });
 
 studentSchema.plugin(uniqueValidator);

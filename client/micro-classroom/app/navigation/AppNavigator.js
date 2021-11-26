@@ -11,7 +11,11 @@ import routes from "./routes";
 const Tab = createBottomTabNavigator();
 
 const AppNavigator = () => (
-  <Tab.Navigator screenOptions={{ safeAreaInsets: { bottom: 6 } }}>
+  <Tab.Navigator
+    screenOptions={{
+      safeAreaInsets: { bottom: 6 },
+    }}
+  >
     <Tab.Screen
       name="My Classes"
       component={FeedNavigator}
@@ -22,12 +26,12 @@ const AppNavigator = () => (
       }}
     />
     <Tab.Screen
-      name={routes.JOIN_CLASS}
-      component={JoinClassScreen}
+      name={routes.CLASS_EDIT}
+      component={ClassEditScreen}
       options={({ navigation }) => ({
         tabBarButton: () => (
           <NewClassButton
-            onPress={() => navigation.navigate(routes.JOIN_CLASS)}
+            onPress={() => navigation.navigate(routes.CLASS_EDIT)}
           />
         ),
         tabBarIcon: ({ color, size }) => (
