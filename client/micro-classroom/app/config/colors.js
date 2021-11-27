@@ -1,11 +1,11 @@
 export default {
-  primary: "#702963",
-  secondary: "#06D6A0",
+  primary: "#34a0a4",
+  secondary: "#76c893",
   black: "#000",
   white: "#fff",
-  background: "#D9C5B2",
-  medium: "#457b9d",
-  light: "#f1faee",
-  dark: "#0A2463",
+  background: "#1a759f",
+  medium: "#52b69a",
+  light: "#b5e48c",
+  dark: "#1e6091",
   danger: "#ff5252",
 };

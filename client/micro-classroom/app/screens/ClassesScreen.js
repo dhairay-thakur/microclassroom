@@ -48,7 +48,7 @@ const ClassesScreen = ({ navigation }) => {
           renderItem={({ item }) => (
             <Card
               title={item.name}
-              subTitle={item.meetLink}
+              subTitle={item.description}
               onPress={() => navigation.navigate(routes.CLASS_DETAILS, item)}
             />
           )}

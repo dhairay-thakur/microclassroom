@@ -13,6 +13,7 @@ import studentsApi from "../api/students";
 import teachersApi from "../api/teachers";
 import AuthContext from "../auth/context";
 import authStorage from "../auth/storage";
+import ActivityIndicator from "../components/ActivityIndicator";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label("Email"),
@@ -22,9 +23,10 @@ const validationSchema = Yup.object().shape({
 const LoginScreen = ({ navigation, route }) => {
   const isStudent = route.params;
   const authContext = useContext(AuthContext);
-
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const handleSubmit = async ({ email, password }) => {
+    setLoading(true);
     let result;
     if (isStudent) {
       result = await studentsApi.login(email, password);
@@ -35,6 +37,7 @@ const LoginScreen = ({ navigation, route }) => {
       console.log(result);
       return setError(true);
     }
+    setLoading(false);
     setError(false);
     const user = jwtDecode(result.data.token);
     authContext.setUser(user);
@@ -42,6 +45,7 @@ const LoginScreen = ({ navigation, route }) => {
   };
   return (
     <Screen style={styles.container}>
+      <ActivityIndicator visible={loading} />
       <Form
         initialValues={{ email: "", password: "" }}
         onSubmit={handleSubmit}

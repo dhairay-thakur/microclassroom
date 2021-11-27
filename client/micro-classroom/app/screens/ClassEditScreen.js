@@ -32,7 +32,7 @@ const ClassEditScreen = ({ navigation, route }) => {
 
   const handleSubmitJoin = async (studentId, subjectId) => {
     setModalVisible(true);
-    const result = await subjectApi.joinClass(studentId, subjectId);
+    const result = await subjectsApi.joinClass(studentId, subjectId);
     if (!result.ok) {
       setModalVisible(false);
       return alert("nahi hua");

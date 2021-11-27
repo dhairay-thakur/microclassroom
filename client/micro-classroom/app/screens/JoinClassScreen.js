@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
+import AuthContext from "../auth/context";
 import AppTextInput from "../components/TextInput";
 import routes from "../navigation/routes";
 import useApi from "../hooks/useApi";
@@ -13,6 +14,7 @@ import ActivityIndicator from "../components/ActivityIndicator";
 import { StyleSheet, View } from "react-native";
 
 const JoinClass = ({ navigation, route }) => {
+  const { user, setUser } = useContext(AuthContext);
   const [code, setCode] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const {
@@ -27,7 +29,7 @@ const JoinClass = ({ navigation, route }) => {
     const result = await subjectApi.joinClass(studentId, subjectId);
     if (!result.ok) {
       setModalVisible(false);
-      return alert("nahi hua");
+      return alert("Could Not Add");
     }
   };
 
@@ -60,7 +62,7 @@ const JoinClass = ({ navigation, route }) => {
       <AppButton
         title="Join Class"
         onPress={() => {
-          handleSubmit("6192bc6d6539c851fce539dc", "619fe17989755b267da01813");
+          handleSubmit(user.userId, code);
         }}
       />
     </Screen>

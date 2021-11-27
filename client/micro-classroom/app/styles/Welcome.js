@@ -1,10 +1,11 @@
 import { StyleSheet } from "react-native";
-
+import colors from "../config/colors";
 const styles = StyleSheet.create({
   background: {
     flex: 1,
     justifyContent: "flex-end",
-    alignItems: "center"
+    alignItems: "center",
+    backgroundColor: colors.dark,
   },
   buttonsContainer: {
     padding: 20,
@@ -21,10 +22,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   tagline: {
-    fontSize: 25,
+    fontSize: 36,
     fontWeight: "600",
     paddingVertical: 20,
     textAlign: "center",
+    color: colors.light,
   },
   radioButton: {
     fontSize: 25,

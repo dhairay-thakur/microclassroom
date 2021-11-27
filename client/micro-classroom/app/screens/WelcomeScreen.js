@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Button from "../components/Button";
 // import routes from "../navigation/routes";
 import styles from "../styles/Welcome";
 import colors from "../config/colors";
-import RadioForm, {
-  RadioButton,
-  RadioButtonInput,
-  RadioButtonLabel,
-} from "react-native-simple-radio-button";
+import RadioForm from "react-native-simple-radio-button";
 import routes from "../navigation/routes";
+import Text from "../components/Text";
 
 let options = [
   { label: "Student", value: 0 },
@@ -21,7 +18,6 @@ const WelcomeScreen = ({ navigation }) => {
   return (
     <View style={styles.background}>
       <View style={styles.logoContainer}>
-        {/* <Image style={styles.logo} source={require("../assets/logo-red.png")} /> */}
         <Text style={styles.tagline}>Welcome to{"\n"}Micro - Classroom</Text>
       </View>
       <View style={styles.buttonsContainer}>
@@ -33,8 +29,8 @@ const WelcomeScreen = ({ navigation }) => {
           initial={0}
           formHorizontal={true}
           labelHorizontal={false}
-          buttonColor={colors.secondary}
-          selectedButtonColor={colors.secondary}
+          buttonColor={colors.light}
+          selectedButtonColor={colors.light}
           onPress={(value) => {
             setIsStudent(value === 0);
           }}
