@@ -33,5 +33,5 @@ mongoose
   .connect(
     "mongodb://dhairay:LAnej5doJIMuoWpH@cluster0-shard-00-00.minpp.mongodb.net:27017,cluster0-shard-00-01.minpp.mongodb.net:27017,cluster0-shard-00-02.minpp.mongodb.net:27017/subjects?ssl=true&replicaSet=atlas-x4dsc5-shard-0&authSource=admin&retryWrites=true&w=majority"
   )
-  .then(() => app.listen(5000))
+  .then(() => app.listen(process.env.PORT || 5000))
   .catch((error) => console.log(error));
