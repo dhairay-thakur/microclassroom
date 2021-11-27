@@ -2,7 +2,7 @@ import { create } from "apisauce";
 import authStorage from "../auth/storage";
 
 const apiClient = create({
-  baseURL: "https://micro-classroom.herokuapp.com/api",
+  baseURL: "https://microclassroom.herokuapp.com/api",
 });
 
 apiClient.addAsyncRequestTransform(async (request) => {
